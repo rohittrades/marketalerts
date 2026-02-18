@@ -269,7 +269,8 @@ def main_task():
     
     if order_lines:
         publish_orders(order_lines)
-    update_json_with_dict(log_path, {'latest_run_at': to_dt.isoformat()})
+    if not test_mode:
+        update_json_with_dict(log_path, {'latest_run_at': to_dt.isoformat()})
 
 if __name__ == "__main__":
     main_task()
