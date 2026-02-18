@@ -1,0 +1,27 @@
+name: Daily Discord Alert
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Runs at 09:00 UTC every day (change as needed)
+    - cron: "30 2 * * *"
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run script
+      run: python order_alerts.py
