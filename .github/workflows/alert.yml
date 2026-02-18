@@ -24,4 +24,9 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run script
+      env:
+        # Mapping your GitHub Secrets to Environment Variables
+        MISC_DATA: ${{ secrets.MISC_DATA }}
+        DISCORD_WEBHOOK_MAIN: ${{ secrets.DISCORD_WEBHOOK_MAIN }}
+        DISCORD_WEBHOOK_TMP: ${{ secrets.DISCORD_WEBHOOK_TMP }}
       run: python order_alerts.py
