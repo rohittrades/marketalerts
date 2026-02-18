@@ -23,7 +23,7 @@ load_dotenv()
 
 # ---- CONFIG ----
 
-test_mode = True
+test_mode = False
 
 
 # ---- Load env variables ---
