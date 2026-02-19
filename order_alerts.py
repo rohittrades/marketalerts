@@ -14,7 +14,7 @@ import os
 import json
 from tabulate import tabulate
 import textwrap
-from util import read_dict_from_json, write_dict_to_json, update_json_with_dict, send_discord
+from util import send_discord, get_previous_ts, update_previous_ts
 import time
 import textwrap
 from dotenv import load_dotenv
@@ -211,19 +211,14 @@ pdf_base = 'data/pdf/'
 session = requests.Session()
 session.headers.update(HEADERS)
 
+
 def main_task():
 
-    CONFIG = read_dict_from_json(log_path)
-    prev_run_dt = CONFIG.get('latest_run_at', None)
+    #load last run time stamp
+    prev_run_dt = get_previous_ts('order_alerts')
 
-    if not prev_run_dt:
-        to_dt = datetime.now(ZoneInfo("Asia/Kolkata"))
-        from_dt = prev_run_dt
-        # from_dt = to_dt - timedelta(days=7)
-    else:
-        # usual daily run
-        to_dt = datetime.now(ZoneInfo("Asia/Kolkata"))
-        from_dt = to_dt - timedelta(days=1)
+    from_dt = prev_run_dt
+    to_dt = datetime.now(ZoneInfo("Asia/Kolkata"))
 
     send_discord(f"Morning! Processing anns from  {str(from_dt.date())} - {str(to_dt.date())}", DISCORD_WEBHOOK_URL)
     
@@ -270,7 +265,7 @@ def main_task():
     if order_lines:
         publish_orders(order_lines)
     if not test_mode:
-        update_json_with_dict(log_path, {'latest_run_at': to_dt.isoformat()})
+        update_previous_ts('order_alerts') 
 
 if __name__ == "__main__":
     main_task()

@@ -10,9 +10,6 @@ jobs:
   run-script:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-
     steps:
     - uses: actions/checkout@v3
 
@@ -33,10 +30,3 @@ jobs:
         DISCORD_WEBHOOK_MAIN: ${{ secrets.DISCORD_WEBHOOK_MAIN }}
         DISCORD_WEBHOOK_TMP: ${{ secrets.DISCORD_WEBHOOK_TMP }}
       run: python order_alerts.py
-
-    - name: Commit and Push changes
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git add data/log.json
-        git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update JSON data [skip ci]" && git push)
