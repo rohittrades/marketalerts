@@ -46,7 +46,7 @@ def upload_json(bucket_name, destination_blob_name, data):
     payload = data.model_dump_json(indent=4) if hasattr(data, 'model_dump_json') else json.dumps(data, indent=4)
 
     blob.upload_from_string(payload, content_type='application/json')
-    print(f"File {destination_blob_name} uploaded to {bucket_name}.")
+    # print(f"File {destination_blob_name} uploaded to {bucket_name}.")
 
 def download_json(bucket_name, source_blob_name):
 

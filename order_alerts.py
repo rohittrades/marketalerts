@@ -231,7 +231,7 @@ def main_task():
     for idx, row in stocks_df.iterrows():
 
         anns = fetch_announcements(row['bse_code'], from_dt, to_dt)
-        print(f'Total announcements for {row["company_name"]} : {len(anns)}')
+        # print(f'Total announcements for {row["company_name"]} : {len(anns)}')
         
         for idx, ann in enumerate(anns):
             if not ann.get('ATTACHMENTNAME'):
