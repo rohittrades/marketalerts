@@ -13,13 +13,13 @@ from util import send_discord2, get_previous_ts, update_previous_ts
 
 # ---- CONFIG ----
 
-test_mode = False
+test_mode = True
 
 
 # ---- Load env variables ---
 load_dotenv()
 
-misc_str = os.getenv("MISC_DATA")
+misc_str = os.getenv("INSIDER_MISC_DATA")
 misc_data = json.loads(misc_str)
 
 BASE_URL = misc_data['base_url']
