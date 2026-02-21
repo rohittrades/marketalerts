@@ -13,7 +13,7 @@ from util import send_discord2, get_previous_ts, update_previous_ts
 
 # ---- CONFIG ----
 
-test_mode = True
+test_mode = False
 
 
 # ---- Load env variables ---
@@ -173,8 +173,8 @@ def main_task():
     #load last run time stamp
     # prev_run_dt = get_previous_ts('insider_alerts')
 
-    from_dt = datetime(2025, 12, 1, 0, 0)
-    to_dt = datetime.now()
+    from_dt = datetime(2025, 9, 1, 0, 0)
+    to_dt = datetime(2025, 12, 31, 0, 0) #datetime.now()
 
     send_discord2(f"Hello! Fetching insider trades from  {str(from_dt.date())} - {str(to_dt.date())}", DISCORD_WEBHOOK_URL)
     send_discord2(f"Disc: Only NSE based insider alerts", DISCORD_WEBHOOK_URL)
@@ -206,9 +206,11 @@ def main_task():
                 insider_item['Sector'] = sector
                 insider_item['Name'] = row['nse_code']
                 insider_lines.append(insider_item)
-            time.sleep(1)
-    if insider_lines:
-        publish_insiders(insider_lines)
+            time.sleep(3)
+        if insider_lines:
+            publish_insiders(insider_lines)
+            insider_lines = [] #reset for next sector
+        time.sleep(30)
 
 
 if __name__ == "__main__":
