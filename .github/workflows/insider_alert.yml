@@ -1,0 +1,35 @@
+name: Daily Discord Alert
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 7:30 AM UTC is 1:00 PM IST
+    # 5 is Friday (0=Sun, 1=Mon... 5=Fri, 6=Sat)
+    - cron: "30 7 * * 5"
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run script
+      env:
+        # Mapping your GitHub Secrets to Environment Variables
+        MISC_DATA: ${{ secrets.INSIDER_MISC_DATA }}
+        DISCORD_WEBHOOK_MAIN: ${{ secrets.DISCORD_INSIDER_WEBHOOK }}
+        DISCORD_WEBHOOK_TMP: ${{ secrets.DISCORD_WEBHOOK_TMP }}
+        GCP_BUCKET: ${{ secrets.GCP_BUCKET }}
+        GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+      run: python insider_alerts.py

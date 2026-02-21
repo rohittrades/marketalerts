@@ -100,3 +100,11 @@ def send_discord(message, webhookurl):
                 time.sleep(retry_after)
                 continue
             break
+
+def send_discord2(message, webhookurl):
+    
+    response = requests.post(
+        webhookurl,
+        json={"content": message}
+    )
+    print(f"Status:", response.status_code)
