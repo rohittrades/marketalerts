@@ -1,4 +1,4 @@
-name: Daily Discord Alert
+name: Daily Orders Alert
 
 on:
   workflow_dispatch:

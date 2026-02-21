@@ -1,4 +1,4 @@
-name: Daily Discord Alert
+name: Weekly Insider Alert
 
 on:
   workflow_dispatch:
