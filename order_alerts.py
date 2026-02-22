@@ -31,9 +31,9 @@ test_mode = False
 if test_mode:
     DISCORD_WEBHOOK_URL = os.getenv('DISCORD_WEBHOOK_TMP')
 else:
-    DISCORD_WEBHOOK_URL = os.getenv('DISCORD_WEBHOOK_MAIN')
+    DISCORD_WEBHOOK_URL = os.getenv('DISCORD_ORDER_WEBHOOK')
 
-misc_str = os.getenv("MISC_DATA")
+misc_str = os.getenv("ORDER_MISC_DATA")
 misc_data = json.loads(misc_str)
 
 BASE_URLS = misc_data.get('base_urls')
@@ -264,6 +264,8 @@ def main_task():
     
     if order_lines:
         publish_orders(order_lines)
+    else:
+        send_discord("No orders announcements for today. Enjoy your day! ☀️", DISCORD_WEBHOOK_URL)
     if not test_mode:
         update_previous_ts('order_alerts') 
 

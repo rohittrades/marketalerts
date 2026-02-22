@@ -31,7 +31,7 @@ API_HEADER = misc_data['api_header']
 if test_mode:
     DISCORD_WEBHOOK_URL = os.getenv('DISCORD_WEBHOOK_TMP')
 else:
-    DISCORD_WEBHOOK_URL = os.getenv('DISCORD_WEBHOOK_MAIN')
+    DISCORD_WEBHOOK_URL = os.getenv('DISCORD_INSIDER_WEBHOOK')
 
 # ---- Methods & Classes ----
 
@@ -186,7 +186,7 @@ def main_task():
     stocks_df = stocks_df.dropna(subset=['nse_code'])
     
     if test_mode:
-        stocks_df = stocks_df.sample(50, random_state=42)
+        stocks_df = stocks_df[stocks_df['nse_code']=='WCIL'] #.sample(50, random_state=42)
 
     insider_lines = []
     sectors_list = set(stocks_df['sector_v1'].values.tolist())

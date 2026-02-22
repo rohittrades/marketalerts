@@ -27,8 +27,8 @@ jobs:
     - name: Run script
       env:
         # Mapping your GitHub Secrets to Environment Variables
-        MISC_DATA: ${{ secrets.INSIDER_MISC_DATA }}
-        DISCORD_WEBHOOK_MAIN: ${{ secrets.DISCORD_INSIDER_WEBHOOK }}
+        INSIDER_MISC_DATA: ${{ secrets.INSIDER_MISC_DATA }}
+        DISCORD_INSIDER_WEBHOOK: ${{ secrets.DISCORD_INSIDER_WEBHOOK }}
         DISCORD_WEBHOOK_TMP: ${{ secrets.DISCORD_WEBHOOK_TMP }}
         GCP_BUCKET: ${{ secrets.GCP_BUCKET }}
         GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
