@@ -1,3 +1,5 @@
+import random
+
 from bse import BSE
 import requests
 from requests.adapters import HTTPAdapter
@@ -76,7 +78,8 @@ def fetch_announcements(scripCode, from_dt, to_dt, max_anns=1000):
                         f"for {scripCode}, stopping fetch anns"
                     )
                     return anns
-                time.sleep(5)
+                wait_time = (2 ** attempt) * 2 + random.uniform(0, 1)
+                time.sleep(wait_time)
 
         if page_count == 1:
             max_anns = res['Table1'][0]['ROWCNT']

@@ -16,6 +16,7 @@ include/
 .env
 .flaskenv
 data/private_info.json
+data/log.json
 
 # --- Distribution / Packaging ---
 dist/

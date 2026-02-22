@@ -107,4 +107,3 @@ def send_discord2(message, webhookurl):
         webhookurl,
         json={"content": message}
     )
-    print(f"Status:", response.status_code)

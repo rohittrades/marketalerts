@@ -55,47 +55,47 @@ class XInsiderScraper:
         except Exception as e:
             print(f"Failed to initialize session: {e}")
 
-    def get_data(self, symbol, from_date, to_date):
-        """
-        Fetches insider trading data for a symbol.
-        Dates must be in DD-MM-YYYY format.
-        """
-        # 1. Refresh cookies for every 'fresh' request to be safe
-        self._init_cookies()
-        
-        # 2. Set API-specific headers
-        api_headers = API_HEADER
-        
+    def get_data(self, symbol, from_date, to_date, max_retries=3):
+        """ Fetches insider trading data for a symbol.Dates must be in DD-MM-YYYY format. """
         params = {
             "index": "equities",
             "symbol": symbol,
             "from": from_date.strftime('%d-%m-%Y'),
             "to": to_date.strftime('%d-%m-%Y')
         }
-
-        try:
-            response = self.session.get(self.api_url, params=params, headers=api_headers, timeout=15)
-            #Note: this api returns top 5 rows even when there is no data in provided interval
-            if response.status_code == 200:
-                json_data = response.json()
-                df = pd.DataFrame(json_data.get('data', []))
-                if df.empty:
-                    return None
-                #handle date parsing & filtering here since api is weird 
-                df['date'] = pd.to_datetime(df['date'], errors='coerce')
-                from_dt = pd.to_datetime(from_date, dayfirst=True)
-                to_dt = pd.to_datetime(to_date, dayfirst=True)
-                df = df[(df['date'] >= from_dt) & (df['date'] <= to_dt)]
-                if df.empty:
-                    return None
-                return df
-            else:
-                print(f"Request failed for {symbol}. Status Code: {response.status_code}")
-                return None
+        for attempt in range(max_retries):
+            try:
+                self._init_cookies()
+                api_headers = API_HEADER
+                response = self.session.get(self.api_url, params=params, headers=api_headers, timeout=20)
+                #Note: api returns top 5 rows even when there is no data in provided interval
                 
-        except Exception as e:
-            print(f"Error fetching data for {symbol}: {e}")
-            return None
+                if response.status_code == 200:
+                    json_data = response.json()
+                    df = pd.DataFrame(json_data.get('data', []))
+                    if df.empty:
+                        return None
+                    #handle date parsing & filtering here since api is weird 
+                    df['date'] = pd.to_datetime(df['date'], errors='coerce')
+                    from_dt = pd.to_datetime(from_date, dayfirst=True)
+                    to_dt = pd.to_datetime(to_date, dayfirst=True)
+                    df = df[(df['date'] >= from_dt) & (df['date'] <= to_dt)]
+                    return df if not df.empty else None
+
+                elif response.status_code == 403:
+                    print(f"🚫 403 Forbidden for {symbol}. Likely rate limited.")
+                else:
+                    print(f"⚠️ Request failed for {symbol}. Status: {response.status_code}")
+
+            except (requests.exceptions.RequestException, Exception) as e:
+                print(f"❌ Attempt {attempt + 1} failed for {symbol}: {e}")
+
+            # --- Exponential Backoff Logic ---
+            if attempt < max_retries - 1:
+                sleep_time = (2 ** attempt) * 5 + random.uniform(1, 3)
+                time.sleep(sleep_time)
+        print(f"🛑 Max retries reached for {symbol}. Returning None.")
+        return None
 
 def get_insider_summary(insider_lines, actual_from_dt=None, actual_to_dt=None):
     
@@ -196,6 +196,7 @@ def main_task():
         sector_stocks = stocks_df[stocks_df['sector_v1'] == sector]
 
         for idx, row in sector_stocks.iterrows():
+            print('processgn stock: ' + row['nse_code'])
             from_3M_ago = to_dt - timedelta(days=90)
             deals_df = scraper.get_data(row['nse_code'], from_3M_ago, to_dt)
             if deals_df is None or len(deals_df) == 0:
@@ -206,11 +207,11 @@ def main_task():
                 insider_item['Sector'] = sector
                 insider_item['Name'] = row['nse_code']
                 insider_lines.append(insider_item)
-            time.sleep(3)
+            time.sleep(1)
         if insider_lines:
             publish_insiders(insider_lines)
             insider_lines = [] #reset for next sector
-        time.sleep(30)
+        time.sleep(15)
 
 
 if __name__ == "__main__":
