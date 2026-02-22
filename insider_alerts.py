@@ -13,7 +13,7 @@ from util import send_discord2, get_previous_ts, update_previous_ts
 
 # ---- CONFIG ----
 
-test_mode = True
+test_mode = False
 
 
 # ---- Load env variables ---
