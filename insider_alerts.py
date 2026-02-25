@@ -131,7 +131,8 @@ def get_insider_summary(insider_lines, actual_from_dt=None, actual_to_dt=None):
     if df6.empty:
         return False, None
     results = df6.agg({'secVal': 'sum', 'date': 'max'})
-
+    if results['secVal'] < 1000: # less than 1K
+        return False, None
     return True, {'Value(cr)': results['secVal']*1.0/10000000, 'XTimes': len(df6), 'LatestTxnOn': results['date']}
 
 
@@ -157,7 +158,7 @@ def publish_insiders(insider_lines):
         for idx, row in sector_insiders_df.iterrows():
             # We use padding (e.g., :9) to keep the colons aligned
             body += f"{'NAME':<10}: {row['Name']}\n"
-            body += f"{'VALUE':<10}: {row['Value(cr)']}\n"
+            body += f"{'VALUE':<10}: {row['Value(cr)']} Cr\n"
             body += f"{'X-TIMES':<10}: {row['XTimes']}\n"
             body += f"{'DATE':<10}: {row['LatestTxnOn']}\n"
             if idx != len(sector_insiders_df) - 1:
@@ -173,8 +174,8 @@ def main_task():
     #load last run time stamp
     # prev_run_dt = get_previous_ts('insider_alerts')
 
-    from_dt = datetime(2025, 9, 1, 0, 0)
-    to_dt = datetime(2025, 12, 31, 0, 0) #datetime.now()
+    from_dt = datetime(2026, 1, 1, 0, 0)
+    to_dt = datetime(2025, 2, 26, 0, 0) #datetime.now()
 
     send_discord2(f"Hello! Fetching insider trades from  {str(from_dt.date())} - {str(to_dt.date())}", DISCORD_WEBHOOK_URL)
     send_discord2(f"Disc: Only NSE based insider alerts", DISCORD_WEBHOOK_URL)
