@@ -97,7 +97,7 @@ class XInsiderScraper:
         print(f"🛑 Max retries reached for {symbol}. Returning None.")
         return None
 
-def get_insider_summary(insider_lines, actual_from_dt=None, actual_to_dt=None):
+def get_insider_summary(insider_lines, actual_from_dt, actual_to_dt, from_XM_ago):
     
     df1 = insider_lines.copy()
     df1['date'] = pd.to_datetime(df1['date'], format='%d-%b-%Y %H:%M')
@@ -176,6 +176,7 @@ def main_task():
 
     from_dt = datetime(2026, 1, 1, 0, 0)
     to_dt = datetime(2025, 2, 26, 0, 0) #datetime.now()
+    from_XM_ago = to_dt - timedelta(days=60)
 
     send_discord2(f"Hello! Fetching insider trades from  {str(from_dt.date())} - {str(to_dt.date())}", DISCORD_WEBHOOK_URL)
     send_discord2(f"Disc: Only NSE based insider alerts", DISCORD_WEBHOOK_URL)
@@ -198,11 +199,10 @@ def main_task():
 
         for idx, row in sector_stocks.iterrows():
             print('processgn stock: ' + row['nse_code'])
-            from_3M_ago = to_dt - timedelta(days=90)
-            deals_df = scraper.get_data(row['nse_code'], from_3M_ago, to_dt)
+            deals_df = scraper.get_data(row['nse_code'], from_XM_ago, to_dt)
             if deals_df is None or len(deals_df) == 0:
                 continue
-            eligible, insider_item = get_insider_summary(deals_df, from_dt, to_dt)
+            eligible, insider_item = get_insider_summary(deals_df, from_dt, to_dt, from_XM_ago)
             
             if eligible:
                 insider_item['Sector'] = sector
