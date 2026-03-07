@@ -1,4 +1,4 @@
-name: Daily Orders Alert
+name: Daily Orders Alert v2
 
 on:
   workflow_dispatch:
