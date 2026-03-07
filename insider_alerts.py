@@ -77,9 +77,9 @@ class XInsiderScraper:
                     if df.empty:
                         return None
                     #handle date parsing & filtering here since api is weird 
-                    df['date'] = pd.to_datetime(df['date'], errors='coerce')
-                    from_dt = pd.to_datetime(from_date, dayfirst=True)
-                    to_dt = pd.to_datetime(to_date, dayfirst=True)
+                    df['date'] = pd.to_datetime(df['date'], errors='coerce').dt.tz_localize(None)
+                    from_dt = pd.to_datetime(from_date, dayfirst=True).tz_localize(None)
+                    to_dt = pd.to_datetime(to_date, dayfirst=True).tz_localize(None)
                     df = df[(df['date'] >= from_dt) & (df['date'] <= to_dt)]
                     return df if not df.empty else None
 
