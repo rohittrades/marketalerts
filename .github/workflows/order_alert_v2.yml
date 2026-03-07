@@ -33,4 +33,4 @@ jobs:
         GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
         OCLASSIFIER_MODEL: ${{ secrets.OCLASSIFIER_MODEL }}
         OEXTRACTOR_MODEL: ${{ secrets.OEXTRACTOR_MODEL }}
-      run: python order_alerts.py
+      run: python order_alerts_v2.py
