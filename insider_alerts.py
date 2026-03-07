@@ -14,7 +14,8 @@ from util import send_discord2, get_previous_ts, update_previous_ts
 # ---- CONFIG ----
 
 test_mode = False
-
+alert_name = 'insider_alerts'
+eligibility_days = 30
 
 # ---- Load env variables ---
 load_dotenv()
@@ -172,14 +173,17 @@ def publish_insiders(insider_lines):
 def main_task():
 
     #load last run time stamp
-    # prev_run_dt = get_previous_ts('insider_alerts')
+    prev_run_dt = get_previous_ts(alert_name)
+    from_dt = prev_run_dt
+    to_dt   = datetime.now(ZoneInfo("Asia/Kolkata"))
 
-    from_dt = datetime(2026, 1, 1, 0, 0)
-    to_dt = datetime(2025, 2, 26, 0, 0) #datetime.now()
-    from_XM_ago = to_dt - timedelta(days=60)
-
-    send_discord2(f"Hello! Fetching insider trades from  {str(from_dt.date())} - {str(to_dt.date())}", DISCORD_WEBHOOK_URL)
-    send_discord2(f"Disc: Only NSE based insider alerts", DISCORD_WEBHOOK_URL)
+    if test_mode:
+        from_dt = datetime(2026, 1, 1, 0, 0)
+        to_dt = datetime(2025, 2, 26, 0, 0) #datetime.now()
+    
+    from_XM_ago = to_dt - timedelta(days=eligibility_days)
+    welcome_msg = f"Hello! Fetching insider trades from  {str(from_dt.date())} - {str(to_dt.date())} \nDisc: Only NSE based insider alerts"
+    send_discord2(welcome_msg, DISCORD_WEBHOOK_URL)
 
     scraper = XInsiderScraper()
 
@@ -193,6 +197,7 @@ def main_task():
     insider_lines = []
     sectors_list = set(stocks_df['sector_v1'].values.tolist())
     
+    insider_flag = False
     for sector in sectors_list:
         print(f"Processing sector: {sector}")
         sector_stocks = stocks_df[stocks_df['sector_v1'] == sector]
@@ -212,8 +217,12 @@ def main_task():
         if insider_lines:
             publish_insiders(insider_lines)
             insider_lines = [] #reset for next sector
+            insider_flag = True
         time.sleep(15)
-
+    if not test_mode:
+        update_previous_ts(alert_name) 
+    if not insider_flag:
+        send_discord2("No insider trading announcements. Enjoy your day! ☀️", DISCORD_WEBHOOK_URL)
 
 if __name__ == "__main__":
     main_task()
