@@ -21,8 +21,8 @@ load_dotenv()
 
 # ---- CONFIG ----
 
-test_mode = True
-local_run = True
+test_mode = False
+local_run = False
 alert_name = 'order_alerts_v2'
 
 # ---- Load env variables ---
