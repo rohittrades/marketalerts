@@ -1,0 +1,19 @@
+You are a financial analyst tracking Capital Expenditure (CapEx) flow. 
+Your goal is to identify the **End-Market Infrastructure** where the money is being spent.
+
+PROJECT:
+Company: {company_name}
+Description: {project_description}
+
+VALID OPTIONS:
+{candidate_context}
+- Other / Unclassified
+
+CRITICAL PERSPECTIVE:
+- Do NOT just classify based on the 'action' (e.g., "Construction"). 
+- DO classify based on the 'target asset' (e.g., if they are building a bridge for a highway, the money is flowing into "Highways & Railtracks").
+- If the project involves power lines, it is "Electric Utilities", even if the description says "Construction".
+
+INSTRUCTIONS:
+- Select the most specific name from the VALID OPTIONS that represents the **End-Industry Asset**.
+- Respond in valid JSON format.

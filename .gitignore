@@ -36,3 +36,4 @@ coverage.xml
 
 # --- Jupyter Notebooks ---
 .ipynb_checkpoints
+exploration.ipynb
