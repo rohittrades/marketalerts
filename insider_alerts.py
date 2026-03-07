@@ -101,7 +101,7 @@ class XInsiderScraper:
 def get_insider_summary(insider_lines, actual_from_dt, actual_to_dt, from_XM_ago):
     
     df1 = insider_lines.copy()
-    df1['date'] = pd.to_datetime(df1['date'], format='%d-%b-%Y %H:%M')
+    df1['date'] = pd.to_datetime(df1['date'], format='%d-%b-%Y %H:%M').dt.tz_localize(None)
     df1['secVal'] = pd.to_numeric(df1['secVal'], errors='coerce')
 
     #  Filter on mode of acquisition & type of secuirity & person category
@@ -122,7 +122,9 @@ def get_insider_summary(insider_lines, actual_from_dt, actual_to_dt, from_XM_ago
         return False, None
 
     #Summarise for date interval user asked for
-    df4 = df2[(df2['date'] >= actual_from_dt) & (df2['date'] <= actual_to_dt)]
+    actual_f_dt = actual_from_dt.replace(tzinfo=None)
+    actual_t_dt = actual_to_dt.replace(tzinfo=None)
+    df4 = df2[(df2['date'] >= actual_f_dt) & (df2['date'] <= actual_t_dt)]
 
     valid_pcats = ['Promoters', 'Promoter Group', 'Immediate relative']
     valid_ttypes = ['Buy']
