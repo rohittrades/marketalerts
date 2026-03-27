@@ -21,7 +21,7 @@ load_dotenv()
 
 # ---- CONFIG ----
 
-test_mode = False
+test_mode = True
 local_run = False
 alert_name = 'order_alerts_v2'
 
@@ -29,6 +29,7 @@ alert_name = 'order_alerts_v2'
 
 if test_mode:
     DISCORD_WEBHOOK_URL = os.getenv('DISCORD_WEBHOOK_TMP')
+    DISCORD_WEBHOOK_URL = os.getenv('DISCORD_WEBHOOK_MISC') #for individual stock OB
 else:
     DISCORD_WEBHOOK_URL = os.getenv('DISCORD_ORDER2_WEBHOOK')
 
@@ -41,7 +42,7 @@ HEADERS = misc_data.get('headers')
 KEYWORDS = misc_data.get('keywords')
 OB_STOCKS = misc_data.get('ob_stocks')
 if test_mode:
-    OB_STOCKS = [533269] #OB_STOCKS[:10]
+    OB_STOCKS = [544223] #OB_STOCKS[:10]
 
 allowed_cat = misc_data.get('allowed_cat')
 forbidden_subcat = misc_data.get('forbidden_subcat')
@@ -62,6 +63,9 @@ llm_key = os.getenv("GEMINI_PAID_KEY1")
 bucket_name = os.getenv("GCP_BUCKET")
 oa_v2_folder = f"alerts/{alert_name}"
 local_folder = "data/orders_data"
+
+if test_mode:
+    oa_v2_folder = f"segregated_alerts/{alert_name}"
 
 # ---- Load prompts ---
 
@@ -235,8 +239,8 @@ def main_task():
     to_dt   = datetime.now(ZoneInfo("Asia/Kolkata"))
 
     if test_mode:
-        from_dt = datetime(2026, 1, 11, 0, 0)
-        to_dt = datetime(2026, 1, 13, 0, 0) #datetime.now()
+        from_dt = datetime(2025, 4, 1, 0, 0)
+        to_dt = datetime(2026, 3, 27, 0, 0) #datetime.now()
     welcome_message = f"Morning! reading announcements from BSE.. \nRunning Order Alerts v2 from {str(from_dt.date())} - {str(to_dt.date())}"
     send_discord2(welcome_message, DISCORD_WEBHOOK_URL)
 
@@ -348,6 +352,8 @@ def main_task():
                 if not local_run:
                     #upload line level json with unique_name
                     raw_json_path = f"{oa_v2_folder}/raw_jsons/{order_date}/{filename}"
+                    if test_mode:
+                        raw_json_path = f"{oa_v2_folder}/raw_jsons/{row['bse_code']}/{filename}"
                     upload_json(bucket_name, raw_json_path, order_line)
                 else:
                     raw_json_folder = os.path.join(local_folder, "raw_jsons", str(order_date))
