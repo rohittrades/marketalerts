@@ -179,7 +179,8 @@ def clean_order_line(order_line):
     else:
         value_str = "not specified"
     
-    if order_line.get('award_status', {}).value == 'first_lower':
+    award_status = order_line.get('award_status')
+    if award_status and getattr(award_status, 'value', award_status) == 'first_lower':
         value_str += ' (First Lower)'
 
     # duration formatting
@@ -200,8 +201,9 @@ def clean_order_line(order_line):
         'awarder': order_line.get('awarding_entity'),
     }
 
-    if order_line.get('partnership_details', {}).get('type', {}).value != 'solo':
-        display_line['partnership'] = ", ".join(order_line.get('partnership_details', {}).get('partners', 'not specified'))
+    partnership = order_line.get('partnership_details') or {}
+    if partnership.get('type') and partnership['type'].value != 'solo':
+        display_line['partnership'] = ", ".join(partnership.get('partners') or ['not specified'])
     
     display_line['duration'] = duration_str
     display_line['target industry'] = order_line.get('sub_industry_name')
