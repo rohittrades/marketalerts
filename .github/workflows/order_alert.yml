@@ -2,9 +2,9 @@ name: Daily Orders Alert
 
 on:
   workflow_dispatch:
-  schedule:
+  # schedule:
     # Runs at 7 am IST every day (usually auto run is delayed)
-    - cron: "30 1 * * *"
+    # - cron: "30 1 * * *"
 
 jobs:
   run-script:
